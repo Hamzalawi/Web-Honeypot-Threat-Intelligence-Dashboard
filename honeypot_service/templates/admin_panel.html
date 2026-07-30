@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <!-- This line connects your HTML to your CSS file -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Admin Portal</h2>
+        
+        <!-- The form action will eventually point to your backend authentication route -->
+        <form action="/" method="POST">
+            
+            <div class="input-group">
+                <label for="username">Username</label>
+                <!-- 'required' prevents submitting if empty -->
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Log In</button>
+            {% if error %}
+                <p style="color: red; margin-top: 10px; font-size: 14px;">
+                 {{ error }}
+                </p>
+             {% endif %}
+            
+        </form>
+    </div>
+
+</body>
+</html>

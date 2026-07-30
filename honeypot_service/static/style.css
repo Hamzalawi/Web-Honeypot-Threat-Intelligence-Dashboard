@@ -1,0 +1,77 @@
+/* Base styles and centering */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5; /* Light grey background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* The white login card */
+.login-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 360px;
+}
+
+.login-container h2 {
+    text-align: center;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 24px;
+}
+
+/* Input fields and labels */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Keeps padding inside the defined width */
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+/* Highlight the input when the admin clicks on it */
+.input-group input:focus {
+    border-color: #2c3e50;
+    outline: none;
+    box-shadow: 0 0 4px rgba(44, 62, 80, 0.2);
+}
+
+/* Submit Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2c3e50; /* Dark slate blue for an "admin" feel */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #1a252f;
+}
