@@ -5,5 +5,6 @@ create table logins(
     user_agent text,
     username varchar(255),
     password varchar(255),
-    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    country TEXT
 );
