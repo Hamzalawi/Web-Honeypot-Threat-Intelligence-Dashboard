@@ -21,6 +21,12 @@ def insert_log():
                              database=os.environ.get("DB_NAME")
     )
 
+
+    # I need to add these things: 
+    #        - findinng the country corresponding to each IP 
+    #        - finding if the attacker is a bot or a human
+    # Well for the latter point, i may later need to change the logic if i want to make it more complexe (using rate of requests and request pattern) but for now keep it simple                        
+    
     with connection:
         with connection.cursor() as cursor: 
 
