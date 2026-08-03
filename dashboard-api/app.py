@@ -20,7 +20,7 @@ def get_db():
 @app.route("/")
 def recent_attacks():
     
-    connection = get_db
+    connection = get_db()
 
     with connection:
         with connection.cursor() as cursor: 
@@ -36,24 +36,59 @@ def recent_attacks():
 
 @app.route("/creds")
 def most_used_creds():
-
-    connection = get_db
+    response={}
+    connection = get_db()
 
     with connection:
         with connection.cursor() as cursor: 
-            sql =   """
-            select username, password from logins 
+            sql1 =   """
+            select username from logins 
             group by username
+            order by count(*) desc
+            limit 5
         """
-            cursor.execute(sql)
-            result = cursor.fetchall() #wrong query, have to rewrite it 
+            cursor.execute(sql1)
+            response["top_usernames"]= cursor.fetchall() #wrong query, have to rewrite it 
 
-    return jsonify(result)
+            sql2 =   """
+            select password from logins 
+            group by password
+            order by count(*) desc
+            limit 5
+        """
+            cursor.execute(sql2)
+            response["top_passwords"]= cursor.fetchall()
+
+    return jsonify(response)
 
 @app.route("/stats")
 def stats():
  
-    pass
+    response={}
+    connection = get_db()
+
+    with connection:
+        with connection.cursor() as cursor:
+
+            sql_bot = """
+                    select ip from logins 
+                    group by is_bot
+                    """
+            cursor.execute(sql_bot)
+            response["bot_pourcentage"] = cursor.fetchall()
+
+            sql_tool = """
+                select user_agent, count(distinct ip) from logins
+                where is_bot = True
+                group by user_agent
+                limit 10
+                """
+            cursor.execute(sql_tool)
+            response["tools"]
+    return jsonify(response)
+
+
+            
 
     #this function returns some stats such as: bots/humans pourcentage, most used tools against me 
 

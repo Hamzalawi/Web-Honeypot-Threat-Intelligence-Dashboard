@@ -6,5 +6,6 @@ create table logins(
     username varchar(255),
     password varchar(255),
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    country TEXT
+    country TEXT,
+    is_bot boolean
 );
