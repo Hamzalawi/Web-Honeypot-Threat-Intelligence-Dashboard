@@ -20,7 +20,6 @@ def geo_ip_lookup(ip):
         data = response.json()             # .json() parses the string into a Python Dictionary
         country = data.get('country_name', 'unkown')
 
-        print(f"the country is \n{country}")
         return country
 
 def verify_bot(user_agent):
@@ -30,7 +29,7 @@ def verify_bot(user_agent):
     with open("bad_agents.txt", "r") as f:
         bots=[line.strip().lower() for line in f]
 
-    if user_agent in bots:
+    if user_agent.lower() in bots:
         return True
 
     else:
@@ -43,7 +42,7 @@ def insert_log():
 
     data = request.get_json()
 
-    ip =  data.get('ip'),
+    ip =  data.get('ip')
     user_agent = data.get('user_agent')
     username = data.get("username")
     password = data.get("password")
