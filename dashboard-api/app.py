@@ -27,7 +27,7 @@ def recent_attacks():
             sql =   """
             select * from logins 
             order by time desc
-            limit 10
+            limit 2
         """
             cursor.execute(sql)
             result = cursor.fetchall()
@@ -71,8 +71,8 @@ def stats():
         with connection.cursor() as cursor:
 
             sql_bot = """
-                    select ip from logins 
-                    group by is_bot
+                    SELECT (AVG(is_bot) * 100.0) AS bot_percentage 
+                    from logins
                     """
             cursor.execute(sql_bot)
             response["bot_pourcentage"] = cursor.fetchall()
@@ -84,14 +84,14 @@ def stats():
                 limit 10
                 """
             cursor.execute(sql_tool)
-            response["tools"]
+            response["tools"] = cursor.fetchall()
     return jsonify(response)
 
 
             
 
     #this function returns some stats such as: bots/humans pourcentage, most used tools against me 
-
+# i need to correct queries 
 
             
 
