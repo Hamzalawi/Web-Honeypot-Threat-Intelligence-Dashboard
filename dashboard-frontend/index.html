@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Analytics Dashboard</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS & JS -->
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h1>Security Analytics Dashboard</h1>
+        <p class="subtitle">Real-time threat monitoring</p>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- Bot vs Human Card -->
+        <div class="card">
+            <h2>Bot vs Human Traffic</h2>
+            <div class="chart-container">
+                <canvas id="botChart"></canvas>
+            </div>
+            
+            <h3>Top Tools (User Agents)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Agent</th>
+                            <th>Unique IPs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tools-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Geographic Data Card -->
+        <div class="card">
+            <h2>Top Origin Countries</h2>
+            <div class="chart-container">
+                <canvas id="countriesChart"></canvas>
+            </div>
+
+            <h2>Recent Attacks</h2>
+            <ul id="recent-attacks-list" class="recent-list">
+                <!-- Populated by JS -->
+            </ul>
+        </div>
+
+        <!-- Credentials Card -->
+        <div class="card">
+            <h2>Compromised Credentials</h2>
+            <h3>Top Usernames</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Attempts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usernames-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Top Passwords</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Password</th>
+                            <th>Attempts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="passwords-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
