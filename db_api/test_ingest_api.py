@@ -1,7 +1,13 @@
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 # 1. Define your endpoint
-url = "http://localhost:8000/logs"
+url = os.environ.get("INGEST_API_URL")
 
 # 2. Build your data as a normal Python dictionary
 payload = {

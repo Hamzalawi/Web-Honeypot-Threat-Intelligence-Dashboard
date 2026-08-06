@@ -45,6 +45,7 @@ def most_used_creds():
         with connection.cursor() as cursor: 
             sql1 =   """
             select username, count(*) as count from logins 
+            where username is not NULL
             group by username
             order by count desc
             limit 5
@@ -54,6 +55,7 @@ def most_used_creds():
 
             sql2 =   """
             select password, count(*) as count from logins 
+            where password is not NULL
             group by password
             order by count desc
             limit 5
