@@ -25,6 +25,7 @@ def admin_panel():
 
             "user_agent": request.headers.get("User-Agent"),
         }
+        print(payload)
 
         requests.post(os.environ.get("INGEST_API_URL"), json=payload)
 

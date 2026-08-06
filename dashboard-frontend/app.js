@@ -1,5 +1,5 @@
 // app.js
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = 'http://127.0.0.1:3000';
 
 async function fetchEndpoint(path) {
     try {
@@ -40,7 +40,7 @@ function renderBotChart(botPercentage) {
 function renderCountriesChart(countriesData) {
     const ctx = document.getElementById('countriesChart').getContext('2d');
     
-    const labels = countriesData.map(row => row.countries || 'Unknown');
+    const labels = countriesData.map(row => row.country || 'Unknown');
     const data = countriesData.map(row => row.count);
 
     new Chart(ctx, {

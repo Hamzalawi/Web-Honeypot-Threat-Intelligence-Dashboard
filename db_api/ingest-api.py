@@ -10,24 +10,35 @@ load_dotenv()
 
 app = Flask(__name__)
 
+bots=set()
+
+with open("bad_agents.txt", "r") as f:
+    bots={line.strip().lower() for line in f}
+
+
+
 def geo_ip_lookup(ip):
 
     if ip in ('localhost', '127.0.0.1'):
         return "testing, debugging"
     else:
 
-        response = requests.get(f"https://json.geoiplookup.io/{ip}", timeout=3) #response is a Responsone object; i.e raw string of text foromatted as json
-        data = response.json()             # .json() parses the string into a Python Dictionary
+        try:
+            response = requests.get(f"https://json.geoiplookup.io/{ip}", timeout=3) #response is a Responsone object; i.e raw string of text foromatted as json
+            data = response.json() 
+        except Exception:
+            data = {'country_name':'not available'}
+
+                    # .json() parses the string into a Python Dictionary
         country = data.get('country_name', 'unkown')
 
         return country
 
 def verify_bot(user_agent):
 
-    bots=[]
 
-    with open("bad_agents.txt", "r") as f:
-        bots=[line.strip().lower() for line in f]
+    if user_agent == None :
+        return False
 
     if user_agent.lower() in bots:
         return True
