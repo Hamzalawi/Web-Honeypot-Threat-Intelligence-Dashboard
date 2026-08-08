@@ -1,19 +1,43 @@
-from flask import Flask, request
+from flask import Flask, g, request
 import pymysql
 from dotenv import load_dotenv
 import os
 import requests
- 
+from dbutils.pooled_db import PooledDB
+
 load_dotenv()
 
 
 
 app = Flask(__name__)
 
-bots=set()
+pool = PooledDB(
+        creator=pymysql,
+        mincached=5,
+        maxcached=15,
+        maxconnections=20,
+        blocking=True,
+        ping=1,
+        host=os.environ.get("DB_HOST"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        database=os.environ.get("DB_NAME"),
+        cursorclass=pymysql.cursors.DictCursor
+)
+
+
+def get_db():
+    if 'db' not in g:
+        g.db = pool.connection()
+
+    return g.db
+
+
+
+BOTS=set()
 
 with open("bad_agents.txt", "r") as f:
-    bots={line.strip().lower() for line in f}
+        BOTS={line.strip().lower() for line in f}
 
 
 
@@ -40,13 +64,19 @@ def verify_bot(user_agent):
     if user_agent == None :
         return False
 
-    if user_agent.lower() in bots:
+    if user_agent.lower() in BOTS:
         return True
 
     else:
         return False
 # obv this logic is vulnerable to UA spoofing
 #also i don't think this is what i really want; curl is considered a bot, but i am searching to knonw if there is a human in the loop or not 
+
+@app.teardown_appcontext
+def close_db(error):
+
+    if 'db' in g:
+        g.db.close()
 
 @app.route("/logs", methods=["POST"])
 def insert_log():
@@ -60,29 +90,22 @@ def insert_log():
     country = geo_ip_lookup(ip)
     is_bot = verify_bot(user_agent)
 
-    connection = pymysql.connect(host=os.environ.get("DB_HOST"),
-                             user=os.environ.get("DB_USER"),
-                             password=os.environ.get("DB_PASSWORD"),
-                             database=os.environ.get("DB_NAME")
-    )
+    
+    connection = get_db()
+    with connection.cursor() as cursor: 
 
+        sql = "insert into logins (ip, user_agent, is_bot, username, password, country ) values (%s, %s, %s, %s, %s, %s)" 
 
-
-    with connection:
-        with connection.cursor() as cursor: 
-
-            sql = "insert into logins (ip, user_agent, is_bot, username, password, country ) values (%s, %s, %s, %s, %s, %s)" 
-
-            values= (
+        values= (
                 ip,
                 user_agent,
                 is_bot,
                 username,
                 password, 
                 country
-            )
+        )
 
-            cursor.execute(sql, values)
-        connection.commit()
+        cursor.execute(sql, values)
+    connection.commit()
         
     return {"status": "success"}, 201
