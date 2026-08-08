@@ -3,36 +3,53 @@ from flask_cors import CORS
 import pymysql
 import os
 from dotenv import load_dotenv
+from dbutils.pooled_db import PooledDB
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+
+pool = PooledDB(
+    creator=pymysql,
+    mincached=1,
+    maxcached=2,
+    maxconnections=5,
+    blocking=True,
+    ping=1,
+    host=os.environ.get("DB_HOST"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASSWORD"),
+    database=os.environ.get("DB_NAME"),
+    cursorclass=pymysql.cursors.DictCursor
+)
+
 def get_db():
     if 'db' not in g:
-        g.db= pymysql.connect(host=os.environ.get("DB_HOST"),
-                             user=os.environ.get("DB_USER"),
-                             password=os.environ.get("DB_PASSWORD"),
-                             database=os.environ.get("DB_NAME"),
-                            cursorclass=pymysql.cursors.DictCursor
-    )
+        g.db = pool.connection()
     return g.db
+
+@app.teardown_appcontext
+def close_db(error):
+
+    if 'db' in g:
+        g.db.close()
+
 
 @app.route("/api/recent")
 def recent_attacks():
     
     connection = get_db()
 
-    with connection:
-        with connection.cursor() as cursor: 
-            sql =   """
-            select * from logins 
-            order by time desc
-            limit 10
+    with connection.cursor() as cursor: 
+        sql =   """
+        select * from logins 
+        order by time desc
+        limit 10
         """
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        cursor.execute(sql)
+        result = cursor.fetchall()
 
     return jsonify(result)
 
@@ -41,27 +58,26 @@ def most_used_creds():
     response={}
     connection = get_db()
 
-    with connection:
-        with connection.cursor() as cursor: 
-            sql1 =   """
+    with connection.cursor() as cursor: 
+        sql1 =   """
             select username, count(*) as count from logins 
             where username is not NULL
             group by username
             order by count desc
             limit 5
         """
-            cursor.execute(sql1)
-            response["top_usernames"]= cursor.fetchall() 
+        cursor.execute(sql1)
+        response["top_usernames"]= cursor.fetchall() 
 
-            sql2 =   """
+        sql2 =   """
             select password, count(*) as count from logins 
             where password is not NULL
             group by password
             order by count desc
             limit 5
         """
-            cursor.execute(sql2)
-            response["top_passwords"]= cursor.fetchall()
+        cursor.execute(sql2)
+        response["top_passwords"]= cursor.fetchall()
 
     return jsonify(response)
 
@@ -71,25 +87,24 @@ def stats():
     response={}
     connection = get_db()
 
-    with connection:
-        with connection.cursor() as cursor:
+    with connection.cursor() as cursor:
 
-            sql_bot = """
-                    SELECT (AVG(is_bot) * 100.0) AS bot_percentage 
-                    from logins
-                    """
-            cursor.execute(sql_bot)
-            response["bot_pourcentage"] = cursor.fetchall()
+        sql_bot = """
+            SELECT (AVG(is_bot) * 100.0) AS bot_percentage 
+            from logins
+            """
+        cursor.execute(sql_bot)
+        response["bot_pourcentage"] = cursor.fetchall()
 
-            sql_tool = """
-                select user_agent, count(distinct ip) as unique_ip from logins
-                where is_bot = True
-                group by user_agent
-                order by unique_ip desc
-                limit 10
+        sql_tool = """
+            select user_agent, count(distinct ip) as unique_ip from logins
+            where is_bot = True
+            group by user_agent
+            order by unique_ip desc
+            limit 10
                 """
-            cursor.execute(sql_tool)
-            response["tools"] = cursor.fetchall()
+        cursor.execute(sql_tool)
+        response["tools"] = cursor.fetchall()
 
             
     return jsonify(response)
@@ -99,17 +114,16 @@ def countries():
 
     connection = get_db()
 
-    with connection:
-        with connection.cursor() as cursor:
-            sql_countries= """
-                    select country, count(*) as count from logins
-                    where country != 'Unknown'
-                    group by country 
-                    order by count desc
-                    limit 5 
+    with connection.cursor() as cursor:
+        sql_countries= """
+            select country, count(*) as count from logins
+            where country != 'Unknown'
+            group by country 
+            order by count desc
+            limit 5 
             """
-            cursor.execute(sql_countries)
-            result = cursor.fetchall()
+        cursor.execute(sql_countries)
+        result = cursor.fetchall()
 
     return jsonify(result)
 

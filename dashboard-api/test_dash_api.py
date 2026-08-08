@@ -51,11 +51,11 @@ def fourth_node():
 
 
 if __name__ == "__main__":
+    for i in range (8):
+       first_node()
 
-    # first_node()
+       second_node()
 
- #second_node()
+       third_node()
 
-    #third_node()
-
-    fourth_node()
+       fourth_node()
