@@ -11,10 +11,10 @@ url = os.environ.get("INGEST_API_URL")
 
 # 2. Build your data as a normal Python dictionary
 payload = {
-    "username": "test_user",
-    "password": "supersecretpassword",
+    "username": "ahmed",
+    "password": "",
     "ip": "8.8.8.8",
-    "user_agent": "sqlmap"
+    "user_agent": "mozzila"
 }
 
 # 3. Send the request (requests automatically sets the Content-Type header for json)
