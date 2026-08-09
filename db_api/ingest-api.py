@@ -80,7 +80,6 @@ def close_db(error):
 
 @app.route("/logs", methods=["POST"])
 def insert_log():
-
     data = request.get_json()
 
     ip =  data.get('ip')
