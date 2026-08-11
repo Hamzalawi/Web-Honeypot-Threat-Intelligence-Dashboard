@@ -1,4 +1,5 @@
-create table logins(
+Use honeypot;
+create table if not exists logins(
 
     id int auto_increment primary key,
     ip varchar(40),
