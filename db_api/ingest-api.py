@@ -49,14 +49,17 @@ def geo_ip_lookup(ip):
 
         try:
             response = requests.get(f"https://json.geoiplookup.io/{ip}", timeout=3) #response is a Responsone object; i.e raw string of text foromatted as json
-            data = response.json() 
+            data = response.json() # .json() parses the string into a Python Dictionary
         except Exception:
             data = {'country_name':'not available'}
 
-                    # .json() parses the string into a Python Dictionary
+                    
         country = data.get('country_name', 'unkown')
 
-        return country
+        if country == "":
+            return "unkown"
+        else :
+            return country
 
 def verify_bot(user_agent):
 

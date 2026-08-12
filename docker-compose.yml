@@ -5,12 +5,12 @@ services:
         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
         MYSQL_USER: ${DB_USER}
         MYSQL_PASSWORD: ${DB_PASSWORD}
-        MYSQSL_DATABASE: ${DB_NAME}
+        MYSQL_DATABASE: ${DB_NAME}
       volumes: 
         - db_data:/var/lib/mysql
         - ./db_api/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       healthcheck:
-        test: ["CMD", "healthcheck-mysql", "--connect"]
+        test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
         interval: 3s
         timeout: 3s
         retries: 10
@@ -27,7 +27,15 @@ services:
         DB_USER: ${DB_USER}
         DB_PASSWORD: ${DB_PASSWORD} 
         DB_NAME: ${DB_NAME} 
-
+      develop:
+        watch:
+          - action: sync
+            path: ./db_api
+            target: /app
+            
+          - action: rebuild
+            path: ./db_api/requirements.txt
+      
     honeypot:
       build: ./honeypot_service/
       ports:
@@ -36,6 +44,13 @@ services:
         - db_api
       environment:
         INGEST_API_URL: ${INGEST_API_URL}
-      
+      develop:
+        watch:
+          - action: sync
+            path: ./honeypot_service
+            target: /app
+          - action: rebuild
+            path: ./honeypot_service/requirements.txt
+
 volumes:
     db_data:
