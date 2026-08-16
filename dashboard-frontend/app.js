@@ -1,9 +1,8 @@
 // app.js
-const API_BASE_URL = 'http://127.0.0.1:3000';
 
 async function fetchEndpoint(path) {
     try {
-        const response = await fetch(`${API_BASE_URL}${path}`);
+        const response = await fetch(path);
         return await response.json();
     } catch (error) {
         console.error(`Error fetching from ${path}:`, error);
