@@ -1,49 +1,69 @@
 services:
     db:
       image: mariadb
+
       environment:
         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
         MYSQL_USER: ${DB_USER}
         MYSQL_PASSWORD: ${DB_PASSWORD}
         MYSQL_DATABASE: ${DB_NAME}
+
       volumes: 
         - db_data:/var/lib/mysql
         - ./db_api/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
       healthcheck:
         test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
         interval: 3s
         timeout: 3s
         retries: 10
-    
+
+      networks:
+        - dashboard_net
+        - honeypot_net
+
+
     db_api: 
       build: ./db_api/
+
       ports: 
-        - "3000:3000"
+        - "4000:4000"
+
       depends_on:
         db:
           condition: service_healthy
+
       environment:
         DB_HOST: db
         DB_USER: ${DB_USER}
         DB_PASSWORD: ${DB_PASSWORD} 
         DB_NAME: ${DB_NAME} 
+
       develop:
         watch:
           - action: sync
             path: ./db_api
             target: /app
-            
           - action: rebuild
             path: ./db_api/requirements.txt
-      
+
+      networks:
+        - honeypot_net
+
+
+
     honeypot:
       build: ./honeypot_service/
+
       ports:
         - "5000:5000"
+
       depends_on:
         - db_api
+
       environment:
         INGEST_API_URL: ${INGEST_API_URL}
+      
       develop:
         watch:
           - action: sync
@@ -52,5 +72,66 @@ services:
           - action: rebuild
             path: ./honeypot_service/requirements.txt
 
+      networks:
+        - honeypot_net
+
+
+    dashboard_frontend:
+      build: ./dashboard-frontend/
+
+      ports:
+        - "8080:8080"
+
+      depends_on:
+        - dashboard_api
+
+      develop:
+        watch:
+          - action: sync
+            path: ./dashboard-frontend
+            target: /app
+          - action: sync+restart 
+            path: ./dashboard-frontend/nginx.conf
+            target: /etc/nginx/conf.d/default.conf
+
+      networks:
+        - dashboard_net
+
+
+    dashboard_api:
+      build: ./dashboard-api/
+
+      ports: 
+        - "3000:3000"
+
+      depends_on:
+        db:
+          condition: service_healthy
+
+
+      environment:
+        DB_HOST: db
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD} 
+        DB_NAME: ${DB_NAME} 
+
+      develop:
+        watch:
+          - action: sync
+            path: ./dashboard-api
+            target: /app
+          - action: rebuild
+            path: ./dashboard-api/requirements.txt
+
+      networks:
+        - dashboard_net
+ 
+
+networks:
+  honeypot_net:
+    driver: bridge
+
+  dashboard_net: 
+    driver: bridge
 volumes:
     db_data:

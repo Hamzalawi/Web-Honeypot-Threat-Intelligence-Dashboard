@@ -1,5 +1,4 @@
 from flask import Flask, g, jsonify
-from flask_cors import CORS
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -8,7 +7,6 @@ from dbutils.pooled_db import PooledDB
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
 
 pool = PooledDB(
