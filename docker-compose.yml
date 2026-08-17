@@ -26,9 +26,6 @@ services:
     db_api: 
       build: ./db_api/
 
-      ports: 
-        - "4000:4000"
-
       depends_on:
         db:
           condition: service_healthy
@@ -100,9 +97,6 @@ services:
 
     dashboard_api:
       build: ./dashboard-api/
-
-      ports: 
-        - "3000:3000"
 
       depends_on:
         db:

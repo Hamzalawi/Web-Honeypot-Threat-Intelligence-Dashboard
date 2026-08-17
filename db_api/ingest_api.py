@@ -13,9 +13,9 @@ app = Flask(__name__)
 
 pool = PooledDB(
         creator=pymysql,
-        mincached=5,
-        maxcached=15,
-        maxconnections=20,
+        mincached=1,
+        maxcached=2,
+        maxconnections=5,
         blocking=True,
         ping=1,
         host=os.environ.get("DB_HOST"),

@@ -8,6 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 3000
-
-CMD flask --app dash_api.py run --debug --host 0.0.0.0 -p 3000
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:3000", "dash_api:app"]

@@ -127,8 +127,5 @@ def countries():
 
             
 
-    #this function returns some stats such as: bots/humans pourcentage, most used tools against me (from the user_agent attribute in the case of is_bot is set to true)
-# i need to correct queries 
-
-            
+               
 
