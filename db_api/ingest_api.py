@@ -57,7 +57,7 @@ def geo_ip_lookup(ip):
         country = data.get('country_name', 'not available')
 
         if country == "":
-            return "unkown"
+            return "not available"
         else :
             return country
 

@@ -1,5 +1,4 @@
 // app.js
-
 async function fetchEndpoint(path) {
     try {
         const response = await fetch(path);
@@ -8,6 +7,19 @@ async function fetchEndpoint(path) {
         console.error(`Error fetching from ${path}:`, error);
         return null;
     }
+}
+
+// Helper function to safely create two-column table rows
+function createTableRow(col1Text, col2Text) {
+    const tr = document.createElement('tr');
+    const td1 = document.createElement('td');
+    const td2 = document.createElement('td');
+    
+    td1.textContent = col1Text;
+    td2.textContent = col2Text;
+    
+    tr.append(td1, td2);
+    return tr;
 }
 
 // Chart initialization functions
@@ -21,7 +33,7 @@ function renderBotChart(botPercentage) {
             labels: ['Bot Traffic', 'Human Traffic'],
             datasets: [{
                 data: [botPercentage, humanPercentage],
-                backgroundColor: ['#ef4444', '#10b981'], // Red for bot, Green for human
+                backgroundColor: ['#ef4444', '#10b981'],
                 borderWidth: 0,
                 hoverOffset: 4
             }]
@@ -49,7 +61,7 @@ function renderCountriesChart(countriesData) {
             datasets: [{
                 label: 'Attempts',
                 data: data,
-                backgroundColor: '#3b82f6', // Blue
+                backgroundColor: '#3b82f6',
                 borderRadius: 4
             }]
         },
@@ -57,7 +69,7 @@ function renderCountriesChart(countriesData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false } // Hide legend for clean look
+                legend: { display: false }
             },
             scales: {
                 y: { beginAtZero: true }
@@ -77,13 +89,13 @@ async function loadDashboard() {
 
     // 1. Stats & Bot Chart
     if (statsData) {
-        // Calculate the percentage
         const botPct = parseFloat(statsData.bot_pourcentage[0].bot_percentage);
         renderBotChart(botPct);
 
         const toolsBody = document.getElementById('tools-table-body');
+        toolsBody.textContent = ''; // Clear previous content safely
         statsData.tools.forEach(tool => {
-            toolsBody.innerHTML += `<tr><td>${tool.user_agent}</td><td>${tool.unique_ip}</td></tr>`;
+            toolsBody.appendChild(createTableRow(tool.user_agent, tool.unique_ip));
         });
     }
 
@@ -95,28 +107,33 @@ async function loadDashboard() {
     // 3. Credentials
     if (credsData) {
         const usernamesBody = document.getElementById('usernames-table-body');
+        usernamesBody.textContent = '';
         credsData.top_usernames.forEach(user => {
-            usernamesBody.innerHTML += `<tr><td>${user.username}</td><td>${user.count}</td></tr>`;
+            usernamesBody.appendChild(createTableRow(user.username, user.count));
         });
 
         const passwordsBody = document.getElementById('passwords-table-body');
+        passwordsBody.textContent = '';
         credsData.top_passwords.forEach(pass => {
-            passwordsBody.innerHTML += `<tr><td>${pass.password}</td><td>${pass.count}</td></tr>`;
+            passwordsBody.appendChild(createTableRow(pass.password, pass.count));
         });
     }
 
     // 4. Recent Attacks
     if (recentData) {
         const recentList = document.getElementById('recent-attacks-list');
+        recentList.textContent = '';
+        
         recentData.forEach(attack => {
-            recentList.innerHTML += `
-                <li>
-                    <strong>${attack.time || 'Recent'}:</strong> 
-                    ${attack.username} / ${attack.password}
-                </li>`;
+            const li = document.createElement('li');
+            const strong = document.createElement('strong');
+            
+            strong.textContent = `${attack.time || 'Recent'}: `;
+            
+            li.append(strong, `${attack.username} / ${attack.password}`);
+            recentList.appendChild(li);
         });
     }
 }
 
-// Load automatically when the page is ready
 window.onload = loadDashboard;

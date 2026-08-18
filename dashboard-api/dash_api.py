@@ -115,7 +115,7 @@ def countries():
     with connection.cursor() as cursor:
         sql_countries= """
             select country, count(*) as count from logins
-            where country != 'Unknown'
+            where country != 'not available'
             group by country 
             order by count desc
             limit 5 
