@@ -13,11 +13,13 @@ class SSHServerHandler(p.ServerInterface):
 
     client_ip = None
 
-    def __init__(self, client_ip):
+    def __init__(self, client_ip, transport):
         self.client_ip = client_ip
+        self.transport = transport 
+        self.attempts = 0
 
     def check_auth_password(self, username, password ):  # this method retrieves the username, password and ip from the logger and sends it to the db_api
-
+        self.attempts += 1 
         payload = {
             "ip": self.client_ip,
             "username": username, 
@@ -28,9 +30,13 @@ class SSHServerHandler(p.ServerInterface):
         except requests.RequestException as e:
             print(f'Failed to send credentials: {e}')
 
+        if self.attempts >= 3:
+            print(f"[{self.client_ip}] Max auth attempts reached. Disconnecting.")
+            self.transport.close()
+
         return p.AUTH_FAILED
 
-    def get_allowed_auths(self):   #this method sets the logging method to password
+    def get_allowed_auths(self, username):   #this method sets the logging method to password
         return "publickey,password"
 
 
@@ -40,7 +46,7 @@ def handleConnection(client, addr):   # this function handles a single connectio
     transport.add_server_key(HOST_KEY)  # this uses the keys generated 
 
     ip = addr[0]
-    server_handler = SSHServerHandler(ip)
+    server_handler = SSHServerHandler(ip, transport)
 
     transport.start_server(server=server_handler) # starts servers
 
