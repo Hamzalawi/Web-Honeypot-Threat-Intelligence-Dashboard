@@ -90,18 +90,18 @@ def insert_log():
     username = data.get("username")
     password = data.get("password")
     country = geo_ip_lookup(ip)
-    is_bot = verify_bot(user_agent)
+    is_automated = verify_bot(user_agent)
 
     
     connection = get_db()
     with connection.cursor() as cursor: 
 
-        sql = "insert into logins (ip, user_agent, is_bot, username, password, country ) values (%s, %s, %s, %s, %s, %s)" 
+        sql = "insert into logins (ip, user_agent,is_automated, username, password, country ) values (%s, %s, %s, %s, %s, %s)" 
 
         values= (
                 ip,
                 user_agent,
-                is_bot,
+                is_automated,
                 username,
                 password, 
                 country

@@ -88,7 +88,7 @@ def stats():
     with connection.cursor() as cursor:
 
         sql_bot = """
-            SELECT (AVG(is_bot) * 100.0) AS bot_percentage 
+            SELECT (AVG(is_automated) * 100.0) AS bot_percentage 
             from logins
             """
         cursor.execute(sql_bot)
@@ -96,7 +96,7 @@ def stats():
 
         sql_tool = """
             select user_agent, count(distinct ip) as unique_ip from logins
-            where is_bot = True
+            where is_automated = True
             group by user_agent
             order by unique_ip desc
             limit 10

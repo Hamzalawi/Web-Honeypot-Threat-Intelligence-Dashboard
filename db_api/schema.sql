@@ -8,5 +8,5 @@ create table if not exists logins(
     password varchar(255),
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     country TEXT,
-    is_bot boolean
+    is_automated boolean
 );
