@@ -111,3 +111,56 @@ def insert_log():
     connection.commit()
         
     return {"status": "success"}, 201
+
+@app.route("/ssh", methods=["POST"]) 
+def add():
+
+    data = request.get_json()
+
+    """
+    
+        payload = {
+            "ip": self.client_ip,
+            "username": username, 
+            "password": password,
+            "client_version": client_version,
+            "cipher": cipher,
+            "mac": mac,
+            "compression": compression
+            connection_timestamp DATETIME(6),
+            COLUMN session_duration_seconds FLOAT
+        } 
+    """
+
+    ip = data.get('ip')
+    username = data.get('username')
+    password = data.get("password")
+    client_version = data.get("client_version")
+    cipher = data.get("cipher")
+    mac = data.get("mac")   #not mac address but message authentication code algorithm (hmac-sha2-256)
+    compression = data.get("compression")
+    connection_timestamp = data.get("connection_timestamp")
+    session_duration_seconds = data.get("session_duration_seconds")
+
+
+    connection = get_db()
+    with connection.cursor() as cursor: 
+        sql = """   insert into ssh (ip, username, password, client_version, cipher, mac, compression, connection_timestamp, session_duration ) 
+                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+        values = (
+            ip, 
+            username,
+            password,
+            client_version,
+            cipher,
+            mac,
+            compression,
+            connection_timestamp,
+            session_duration_seconds
+        )
+        cursor.execute(sql, values)
+    connection.commit()
+
+    return {"status": "success"}, 201
+
