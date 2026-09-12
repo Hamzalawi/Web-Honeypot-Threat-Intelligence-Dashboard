@@ -2,15 +2,11 @@ from flask import Flask, render_template, request, jsonify
 import requests 
 from dotenv import load_dotenv
 import os
-from werkzeug.middleware.proxy_fix import ProxyFix
  
 load_dotenv()
 
 
 app = Flask(__name__)
-
-# Trust 1 proxy (Nginx) for X-Forwarded-For and X-Forwarded-Proto
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 @app.route("/", methods=["GET", "POST"])
 def admin_panel():
@@ -21,7 +17,7 @@ def admin_panel():
 
             "password": request.form.get("password"),
 
-            "ip": request.form.get("X-Real-IP", request.remote_addr),
+            "ip": request.headers.get("X-Real-IP", request.remote_addr),
                                         
 
             "user_agent": request.headers.get("User-Agent"),
