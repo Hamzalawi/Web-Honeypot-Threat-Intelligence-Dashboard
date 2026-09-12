@@ -145,7 +145,7 @@ def add():
 
     connection = get_db()
     with connection.cursor() as cursor: 
-        sql = """   insert into ssh (ip, username, password, client_version, cipher, mac, compression, connection_timestamp, session_duration ) 
+        sql = """   insert into ssh (ip, username, password, client_version, cipher, mac, compression, connection_timestamp, session_duration_seconds ) 
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
         values = (

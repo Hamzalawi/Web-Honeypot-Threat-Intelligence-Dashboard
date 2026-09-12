@@ -22,5 +22,5 @@ create table if not exists ssh(
     mac varchar(255),
     compression varchar(255),
     connection_timestamp DATETIME(6),
-    COLUMN session_duration_seconds FLOAT
+    session_duration_seconds FLOAT
 );

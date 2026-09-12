@@ -8,6 +8,9 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 import time
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Hide the giant Paramiko stack traces when scanners or netcat drop connections
 logging.getLogger("paramiko").setLevel(logging.CRITICAL)
@@ -27,14 +30,14 @@ class SSHServerHandler(p.ServerInterface):
         self.attempts = 0
 
         self.start_time = time.time()
-        self.connection_timestamp = datetime.now(timezone.utc).isoformat()
+        self.connection_timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
     def check_auth_password(self, username, password ):  # this method retrieves the username, password and ip from the logger and sends it to the db_api
 
-        self.attmpts += 1
+        self.attempts += 1
 
-        current_duration = round(time.time - self.start_time, 2 )
+        current_duration = round(time.time() - self.start_time, 2 )
 
         # Extract threat intel fingerprints from the transport layer
         # These are populated by Paramiko after the Key Exchange (KEX) completes
@@ -51,7 +54,7 @@ class SSHServerHandler(p.ServerInterface):
             "cipher": cipher,
             "mac": mac,
             "compression": compression,
-            "connection_timestamp": self.conection_timestamp,
+            "connection_timestamp": self.connection_timestamp,
             "session_duration_seconds": current_duration
         } 
         try:
@@ -82,9 +85,6 @@ def handleConnection(client, addr):   # this function handles a single connectio
     try:
         transport.start_server(server=server_handler) # starts servers
 
-        channel = transport.accept(1)  #wait 1 second for the channel (session, shell, exec, sftp)
-        if not channel is None:    #close the channel immediately
-            channel.close()
     except Exception as e:
         print(f'encountered an exception: {e}')
 

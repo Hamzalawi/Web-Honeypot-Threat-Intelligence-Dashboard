@@ -156,8 +156,10 @@ services:
         watch:
           - action: sync+restart
             path: ./ssh/
-            target: /app/ssh.py
-
+            target: /app/
+      
+      networks:
+        - honeypot_net
 
 
 
