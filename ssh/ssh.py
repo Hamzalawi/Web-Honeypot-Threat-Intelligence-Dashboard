@@ -6,6 +6,8 @@ import socket
 import sys
 import logging
 from concurrent.futures import ThreadPoolExecutor
+import time
+from datetime import datetime, timezone
 
 # Hide the giant Paramiko stack traces when scanners or netcat drop connections
 logging.getLogger("paramiko").setLevel(logging.CRITICAL)
@@ -24,15 +26,36 @@ class SSHServerHandler(p.ServerInterface):
         self.transport = transport 
         self.attempts = 0
 
+        self.start_time = time.time()
+        self.connection_timestamp = datetime.now(timezone.utc).isoformat()
+
+
     def check_auth_password(self, username, password ):  # this method retrieves the username, password and ip from the logger and sends it to the db_api
-        self.attempts += 1 
+
+        self.attmpts += 1
+
+        current_duration = round(time.time - self.start_time, 2 )
+
+        # Extract threat intel fingerprints from the transport layer
+        # These are populated by Paramiko after the Key Exchange (KEX) completes
+        client_version = self.transport.remote_version or "Unknown"
+        cipher = self.transport.remote_cipher or "Unknown"
+        mac = self.transport.remote_mac or "Unknown"
+        compression = self.transport.remote_compression or "Unknown"
+
         payload = {
             "ip": self.client_ip,
             "username": username, 
             "password": password,
-        }
+            "client_version": client_version,
+            "cipher": cipher,
+            "mac": mac,
+            "compression": compression,
+            "connection_timestamp": self.conection_timestamp,
+            "session_duration_seconds": current_duration
+        } 
         try:
-            requests.post(os.environ.get("INGEST_API_URL"), json=payload, timeout= 5.0)       
+            requests.post(os.environ.get("INGEST_API_SSH_URL"), json=payload, timeout= 5.0)       
         except requests.RequestException as e:
             print(f'Failed to send credentials: {e}')
 
