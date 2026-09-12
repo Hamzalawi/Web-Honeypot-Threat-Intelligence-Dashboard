@@ -126,6 +126,46 @@ def countries():
     return jsonify(result)
 
             
+@app.route("/api/ssh/recent")
+def ssh_recent_attacks():
 
-               
+    connection = get_db()
 
+    with connection.cursor() as cursor:
+        sql = """
+        select * from ssh
+        order by connection_timestamp desc
+        limit 10
+        """
+        cursor.execute(sql)
+        result = cursor.fetchall()
+
+    return jsonify(result)
+
+@app.route("/api/ssh/creds")
+def ssh_most_used_creds():
+    response = {}
+    connection = get_db()
+
+    with connection.cursor() as cursor:
+        sql1 = """
+            select username, count(*) as count from ssh
+            where username is not NULL
+            group by username
+            order by count desc
+            limit 5
+        """
+        cursor.execute(sql1)
+        response["top_usernames"] = cursor.fetchall()
+
+        sql2 = """
+            select password, count(*) as count from ssh
+            where password is not NULL
+            group by password
+            order by count desc
+            limit 5
+        """
+        cursor.execute(sql2)
+        response["top_passwords"] = cursor.fetchall()
+
+    return jsonify(response)

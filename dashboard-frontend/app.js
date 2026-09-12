@@ -80,11 +80,13 @@ function renderCountriesChart(countriesData) {
 
 // Main App Logic
 async function loadDashboard() {
-    const [recentData, credsData, statsData, countriesData] = await Promise.all([
+    const [recentData, credsData, statsData, countriesData, sshRecentData, sshCredsData] = await Promise.all([
         fetchEndpoint('/api/recent'),
         fetchEndpoint('/api/creds'),
         fetchEndpoint('/api/stats'),
-        fetchEndpoint('/api/countries') 
+        fetchEndpoint('/api/countries'),
+        fetchEndpoint('/api/ssh/recent'),
+        fetchEndpoint('/api/ssh/creds')
     ]);
 
     // 1. Stats & Bot Chart
@@ -98,6 +100,7 @@ async function loadDashboard() {
             toolsBody.appendChild(createTableRow(tool.user_agent, tool.unique_ip));
         });
     }
+    
 
     // 2. Geographic Data Chart
     if (countriesData) {
@@ -132,6 +135,37 @@ async function loadDashboard() {
             
             li.append(strong, `${attack.username} / ${attack.password}`);
             recentList.appendChild(li);
+        });
+    }
+
+    // 5. SSH Credentials
+    if (sshCredsData) {
+        const sshUsernamesBody = document.getElementById('ssh-usernames-table-body');
+        sshUsernamesBody.textContent = '';
+        sshCredsData.top_usernames.forEach(user => {
+            sshUsernamesBody.appendChild(createTableRow(user.username, user.count));
+        });
+
+        const sshPasswordsBody = document.getElementById('ssh-passwords-table-body');
+        sshPasswordsBody.textContent = '';
+        sshCredsData.top_passwords.forEach(pass => {
+            sshPasswordsBody.appendChild(createTableRow(pass.password, pass.count));
+        });
+    }
+
+    // 6. Recent SSH Attacks
+    if (sshRecentData) {
+        const sshRecentList = document.getElementById('ssh-recent-attacks-list');
+        sshRecentList.textContent = '';
+
+        sshRecentData.forEach(attack => {
+            const li = document.createElement('li');
+            const strong = document.createElement('strong');
+
+            strong.textContent = `${attack.connection_timestamp || 'Recent'}: `;
+
+            li.append(strong, `${attack.username} / ${attack.password}`);
+            sshRecentList.appendChild(li);
         });
     }
 }

@@ -92,6 +92,33 @@
         </div>
 
     </div>
+<!-- SSH Honeypot Card -->
+<div class="card">
+    <h2>SSH Honeypot Activity</h2>
+
+    <h3>Top SSH Usernames</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr><th>Username</th><th>Attempts</th></tr>
+            </thead>
+            <tbody id="ssh-usernames-table-body"></tbody>
+        </table>
+    </div>
+
+    <h3>Top SSH Passwords</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr><th>Password</th><th>Attempts</th></tr>
+            </thead>
+            <tbody id="ssh-passwords-table-body"></tbody>
+        </table>
+    </div>
+
+    <h3>Recent SSH Attacks</h3>
+    <ul id="ssh-recent-attacks-list" class="recent-list"></ul>
+</div>
 
 </body>
 </html>
