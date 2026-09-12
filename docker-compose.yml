@@ -141,6 +141,25 @@ services:
         - dashboard_net
         - honeypot_net
 
+    ssh_service:
+      build: ./ssh/
+
+      ports: 
+        - "2222:2222"
+
+      depends_on: 
+        - db_api
+
+      environment: 
+        INGEST_API_SSH_URL: ${INGEST_API_SSH_URL}
+      develop:
+        watch:
+          - action: sync+restart
+            path: ./ssh/
+            target: /app/
+      
+      networks:
+        - honeypot_net
 
 
 

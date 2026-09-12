@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 import requests 
 from dotenv import load_dotenv
 import os
-
  
 load_dotenv()
 
@@ -18,9 +17,7 @@ def admin_panel():
 
             "password": request.form.get("password"),
 
-            "ip": request.remote_addr,      #request.remote_addr gives you the IP of the machine that directly opened the TCP connection to your Flask app.
-                                            # i need to change this later or i will be getting localhost as an ip address because i am running it in docker
-                                            # The solution is to use Werkzeug Middleware
+            "ip": request.headers.get("X-Real-IP", request.remote_addr),
                                         
 
             "user_agent": request.headers.get("User-Agent"),
