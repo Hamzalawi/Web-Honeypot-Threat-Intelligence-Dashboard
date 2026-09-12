@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=app:app . .
 
-EXPOSE 4000
+EXPOSE  2222
 
 USER app
 
